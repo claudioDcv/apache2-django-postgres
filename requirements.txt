@@ -1,0 +1,15 @@
+appdirs==1.4.3
+Django==1.10.6
+django-admin==1.0.2
+djangorestframework==3.6.2
+packaging==16.8
+pip==9.0.1
+psycopg2==2.7.1
+pyparsing==2.2.0
+setuptools==34.3.2
+six==1.10.0
+wheel==0.29.0
+python-dateutil==2.6.0
+django-filter==1.0.1
+Markdown==2.6.8
+
