@@ -4,8 +4,8 @@
 Vetadmin System
 
 ### Link
-[Trello](https://trello.com/b/YnwxnTuA/vetadmin)
-[Admin link](url http://45.56.93.71/admin/)
+- [Trello](https://trello.com/b/YnwxnTuA/vetadmin)
+- [Admin link](url http://45.56.93.71/admin/)
 
 #### Vistas
 - Login
