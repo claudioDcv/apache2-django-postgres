@@ -7,6 +7,39 @@ Vetadmin System
 - [Trello](https://trello.com/b/YnwxnTuA/vetadmin)
 - [Admin](http://45.56.93.71/admin/)
 
+
+#### Recipe Debian 8
+- Install `apache2/stable,now 2.4.10-10+deb8u8 amd64`
+- Install `libapache2-mod-wsgi-py3/stable,now 4.3.0-1 amd64`
+
+- Install psql (PostgreSQL) 9.6.2
+- Install Python 3.4.2
+- in location `/var/www/vetadmin`
+  - Create virtualenv name `venv`
+  - Active virtualenv `source /var /www/vetadmin/venv/bin/activate`
+  - install requirements `pip -r requirements.txt`
+  
+  
+  
+ ### Config Apache 2
+ - in `/etc/apache2/sites-available`
+  
+ ```apacheconf
+ <VirtualHost *:80>
+
+        Alias /static/ /var/www/vetadminweb/vetadminproject/static/
+
+        <Directory /var/www/vetadminweb/vetadminproject/static>
+                Require all granted
+        </Directory>
+
+        WSGIDaemonProcess vetadminproject python-path=/var/www/vetadminweb/vetadminproject:/var/www/vetadminweb/venv/lib/python3.4/site-packages
+        WSGIProcessGroup vetadminproject
+        
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+  
 #### Vistas
 - Login
   - Recuperación de contraseña
