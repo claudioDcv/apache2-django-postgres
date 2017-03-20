@@ -17,7 +17,7 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
+# dist/
 downloads/
 eggs/
 .eggs/
@@ -105,7 +105,7 @@ ENV/
 .tox/
 __pycache__
 MANIFEST
-dist/
+# dist/
 docs/_build/
 docs/locale/
 node_modules/
