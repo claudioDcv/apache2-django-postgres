@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="row justify-content-md-left">
+      <div class="col-12 col-md-auto col-pading-tb">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">{{ object.name }}</h4>
+          </div>
+          <div class="card-block">
+            <p class="card-text">{{ object.description }}</p>
+            <p class="card-text"><small class="text-muted">Raza {{ object.dog_breed }}</small></p>
+            <p class="card-text"><small class="text-muted">Creado por: {{ object.create_by }}</small></p>
+          </div>
+          <footer class="card-footer">
+            <a href="{% url 'patient-list' %}" class="btn btn-primary">Listado</a>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

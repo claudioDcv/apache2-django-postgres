@@ -1,3 +1,59 @@
-html,body{
-  background: red;
+html,body{overflow-x: hidden;}
+.col-pading-tb{padding-top: 15px;padding-bottom: 15px;}
+.select2-selection{height: 38px!important;}
+.select2-selection > span{    line-height: 35px!important;}
+.bootstrap-datetimepicker-widget th{font-size: 14px!important;}
+
+
+.sidebar-offcanvas
+.nav-item.active{
+  color: hsl(208, 98%, 43%);
+  background: hsl(240, 14%, 97%);
+  border: solid 1px hsl(208, 98%, 43%);
+  border-radius: 5px;
+  overflow: hidden;
 }
+.sidebar-offcanvas .nav-item.active span,
+.sidebar-offcanvas .nav-item.active a{
+  color: hsl(208, 98%, 43%);
+  background: hsl(240, 14%, 97%);
+}
+
+.sidebar-offcanvas a.nav-link,
+.sidebar-offcanvas span.nav-link{
+  position: relative;
+}
+
+.sidebar-offcanvas a.nav-link.active,
+.sidebar-offcanvas span.nav-link.active{
+  color: hsl(208, 98%, 43%);
+  background: hsl(240, 14%, 97%);
+}
+
+.sidebar-offcanvas a.nav-link.nav-link-sub::after,
+.sidebar-offcanvas span.nav-link.nav-link-sub::after{
+  content: '';
+  position: absolute;
+  background: hsla(240, 14%, 97%, 0);
+  height: 40px;
+  width: 16px;
+  left: -16px;
+  top: 0;
+}
+
+.sidebar-offcanvas a.nav-link.active.nav-link-sub::after,
+.sidebar-offcanvas span.nav-link.active.nav-link-sub::after{
+  content: '- ';
+  position: absolute;
+  background: hsl(240, 14%, 97%);
+  height: 40px;
+  width: 16px;
+  left: -16px;
+  top: 0;
+  line-height: 40px;
+  border-right: solid 10px hsl(240, 14%, 97%);
+  padding-left: 16px;
+}
+
+
+.dt-bootstrap .row{width: 100%!important;}
