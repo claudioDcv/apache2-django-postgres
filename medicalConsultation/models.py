@@ -60,6 +60,20 @@ class DogColor(models.Model):
         verbose_name_plural = 'colores'
 
 '''
+Abigarrado: marcas entremezcladas de diferentes colores sin que predomine ninguno.
+
+Albaricoque: color chabacano.
+
+Albino: blanco, sin pigmentaciones.
+
+Amarillo: como el de la raza Vizla.
+
+Arlequín: pelaje de fondo blanco con manchas negras irregulares; es decir, coloración parchada, como el Gran Danés.
+
+Ascob: cualquier color sólido que no sea negro. Este término se usa regularmente con el Cocker Spaniel.
+
+Atigrado: mezcla de pelo negro en forma de rayas sobre un color más claro, como café o rojo, común en el Bóxer.
+
 Avellana: café cremoso.
 
 Azul: va desde el azul gris pálido hasta el azul acero o azul gris, por ejemplo el Kerry Blue Terrier.
@@ -151,12 +165,20 @@ Sal y pimienta: colores gris oscuro con gris claro o blanco pardo, como el Schna
 Sepia: café rojizo oscuro.
 
 Tricolor: mezcla de colores negro, blanco y café, distintivos en los Hounds.
+
 '''
 
 '''
 
 A
+A
+Alano
+Alaskan Malamute
+American Staffordshire Terrier
+American Water Spaniel
+Antiguo Pastor Inglés
 
+OKSOKS
 
 
 
