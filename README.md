@@ -18,7 +18,7 @@ Vetadmin System
 - in location `/var/www/vetadmin`
   - Create virtualenv name `venv`
   - Active virtualenv `source /var /www/vetadmin/venv/bin/activate`
-  - install requirements `pip -r requirements.txt`
+  - install requirements `pip -r requirements.txt`
 
 ### Postgress Config
 
