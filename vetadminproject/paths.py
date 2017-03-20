@@ -11,6 +11,8 @@ def project_dir_and_name():
     return os.path.split(django_project_path)
 
 PROJECT_DIR, PROJECT_NAME = project_dir_and_name()
+
+
 TMP_FOLDER = '/tmp'
 PYTHON_BIN = os.path.dirname(sys.executable)
 VAR_ROOT = os.path.join(PROJECT_DIR, PROJECT_NAME, 'var')

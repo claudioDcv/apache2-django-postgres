@@ -96,10 +96,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'vetadmin',
-        'USER': 'vetadminuser',
-        'PASSWORD': 'visual.02',
+        'USER': 'postgres',
+        'PASSWORD': '1234567890',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '5432',
     }
 }
 
@@ -139,9 +139,15 @@ SITE_ID = 1
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
+
+STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
-    '/var/www/vetadminweb/vetadminproject/static',
-]
+    os.path.join(PROJECT_DIR, PROJECT_NAME),
+)
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+#     '/var/www/vetadminweb/vetadminproject/static',
+# ]
 
 STATIC_ROOT = '/var/www/vetadminweb/vetadminproject/static'

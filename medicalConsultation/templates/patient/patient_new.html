@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-md-left">
+      <div class="col-12 col-md-auto col-pading-tb">
+        <h1>Nuevo Paciente</h1>
+        <form method="POST" class="post-form">{% csrf_token %}
+            {{ form }}
+            <input type="hidden" name="create_by" value="1">
+            <!-- {{ form.published_date }} -->
+            <button type="submit" class="save btn btn-default">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
