@@ -33,7 +33,8 @@ CREATE DATABASE vetadmin;
 \q
 ```
 
-## Config in DEV
+#### Config in DEV
+
 ```python
 DATABASES = {
     'default': {
@@ -47,7 +48,7 @@ DATABASES = {
 }
 ```
 
-### Migrations
+#### Migrations
 
 ```shell
 ./manage.py makemigrations
@@ -58,7 +59,7 @@ DATABASES = {
 ```
 --------------------------------
 
-## Create super user
+#### Create super user
 ```shell
 ./manage.py createsuperuser
 ```
