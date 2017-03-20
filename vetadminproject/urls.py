@@ -10,6 +10,6 @@ from django.conf.urls.static import static
 # ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'/', include('medicalConsultation.urls')),
+    url(r'^$', include('medicalConsultation.urls')),
     url(r'^consulta/', include('medicalConsultation.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
