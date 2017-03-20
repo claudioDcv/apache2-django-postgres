@@ -19,12 +19,54 @@ Vetadmin System
   - Create virtualenv name `venv`
   - Active virtualenv `source /var /www/vetadmin/venv/bin/activate`
   - install requirements `pip -r requirements.txt`
-  
-  
-  
+
+### Postgress Config
+
+- Create Database
+```sql
+ALTER USER "postgres" WITH PASSWORD '1234567890';
+CREATE DATABASE vetadmin;
+```
+
+- Exit databese
+```shell
+\q
+```
+
+## Config in DEV
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'vetadmin',
+        'USER': 'postgres',
+        'PASSWORD': '1234567890',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+```
+
+### Migrations
+
+```shell
+./manage.py makemigrations
+
+./manage.py migrate
+
+./manage.py runserver
+```
+--------------------------------
+
+## Create super user
+```shell
+./manage.py createsuperuser
+```
+
+
  ### Config Apache 2
  - in `/etc/apache2/sites-available`
-  
+
  ```apacheconf
  <VirtualHost *:80>
 
@@ -36,11 +78,11 @@ Vetadmin System
 
         WSGIDaemonProcess vetadminproject python-path=/var/www/vetadminweb/vetadminproject:/var/www/vetadminweb/venv/lib/python3.4/site-packages
         WSGIProcessGroup vetadminproject
-        
+
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
-``` 
+```
 
 #### Vistas
 - Login
@@ -106,6 +148,3 @@ Vetadmin System
 |                                     |                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                      |
 |                                     |                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                      |
 |                                     |                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                      |
-
-
-
