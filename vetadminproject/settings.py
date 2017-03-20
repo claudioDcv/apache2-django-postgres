@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from vetadminproject.paths import PROJECT_DIR
+from vetadminproject.paths import PROJECT_NAME
+from vetadminproject.paths import VAR_ROOT
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +29,7 @@ SECRET_KEY = '0730$g285s_s57j$*d_n$s6jdpx-w^aq#5!9as(2n@x+a3_1-3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['45.56.93.71']
+ALLOWED_HOSTS = ['45.56.93.71','localhost']
 
 
 # Application definition
@@ -38,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'medicalConsultation',
 ]
 
 MIDDLEWARE = [
@@ -52,10 +56,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'vetadminproject.urls'
 
+TEMPLATE_BASE_DIR = os.path.join(PROJECT_DIR, PROJECT_NAME, 'templates')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            TEMPLATE_BASE_DIR,
+            os.path.join(PROJECT_DIR, 'medicalConsultation', 'templates'),
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
