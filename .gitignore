@@ -115,4 +115,3 @@ build/
 tests/report/
 static/admin/
 .env_dev
-*.pyc
