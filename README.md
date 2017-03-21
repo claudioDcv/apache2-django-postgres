@@ -18,7 +18,7 @@ Vetadmin System
 - in location `/var/www/vetadmin`
   - Create virtualenv name `venv`
   - Active virtualenv `source /var /www/vetadmin/venv/bin/activate`
-  - install requirements `pip -r requirements.txt`
+  - install requirements `pip -r requirements.txt`
 
 ### Postgress Config
 
@@ -33,7 +33,8 @@ CREATE DATABASE vetadmin;
 \q
 ```
 
-## Config in DEV
+#### Config in DEV
+
 ```python
 DATABASES = {
     'default': {
@@ -47,7 +48,7 @@ DATABASES = {
 }
 ```
 
-### Migrations
+#### Migrations
 
 ```shell
 ./manage.py makemigrations
@@ -58,7 +59,7 @@ DATABASES = {
 ```
 --------------------------------
 
-## Create super user
+#### Create super user
 ```shell
 ./manage.py createsuperuser
 ```
