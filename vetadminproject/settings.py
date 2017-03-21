@@ -92,17 +92,32 @@ WSGI_APPLICATION = 'vetadminproject.wsgi.application'
 
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'vetadmin',
+#         'USER': 'vetadminuser',
+#         'PASSWORD': 'visual.02',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
+
+def env(name):
+    return os.environ.get(name, None)
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'vetadmin',
-        'USER': 'vetadminuser',
-        'PASSWORD': 'visual.02',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
-
 
 
 # Password validation
@@ -137,11 +152,30 @@ SITE_ID = 1
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
+# STATIC_URL = '/static/'
+#
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+#     '/var/www/vetadminweb/vetadminproject/static',
+# ]
+#
+# STATIC_ROOT = '/var/www/vetadminweb/vetadminproject/static'
+
+
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    '/var/www/vetadminweb/vetadminproject/static',
-]
 
-STATIC_ROOT = '/var/www/vetadminweb/vetadminproject/static'
+
+
+if env('ENV_SETTING') == 'dev':
+    STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, "static"),
+        os.path.join(PROJECT_DIR, PROJECT_NAME),
+    )
+    STATIC_ROOT = '/var/www/vetadminweb/vetadminproject/static'
+
+if env('ENV_SETTING') == 'prod':
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "static"),
+        '/var/www/vetadminweb/vetadminproject/static',
+    ]
