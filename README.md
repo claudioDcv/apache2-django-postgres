@@ -33,11 +33,8 @@ CREATE DATABASE vetadmin;
 \q
 ```
 
-
 #### Config in DEV
 
-
-```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

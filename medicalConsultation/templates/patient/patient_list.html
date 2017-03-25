@@ -12,6 +12,7 @@
             <h4 class="card-title">{{ patient.name }}</h4>
           </div>
           <div class="card-block">
+            <p><img style="width:300px;height:auto;" src="/{{ patient.first_image }}"/></p>
             <p class="card-text">{{ patient.description }}</p>
             <p class="card-text"><small class="text-muted">Raza {{ patient.dog_breed }}</small></p>
             <p class="card-text"><small class="text-muted">Creado por: {{ patient.create_by }}</small></p>

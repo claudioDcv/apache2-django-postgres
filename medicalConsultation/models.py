@@ -1,11 +1,72 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager
+from PIL import Image
+
+
+
+import socket
+#
+# try:
+#     HOSTNAME = 'http://localhost:8000/static/'
+# except:
+#     HOSTNAME = 'localhost'
+
+class VeterinarianManager(BaseUserManager):
+
+    def create_user(self, email, password=None, **kwargs):
+        if not email:
+            raise ValueError('Users must have a valid email address.')
+        if not kwargs.get('username'):
+            raise ValueError('Users must have a valid username.')
+        account = self.model(
+            email=self.normalize_email(email), username=kwargs.get('username')
+        )
+        account.set_password(password)
+        account.save()
+        return account
+
+    def create_superuser(self, email, password, **kwargs):
+        account = self.create_user(email, password, **kwargs)
+        account.is_admin = True
+        account.save()
+        return account
+
+class Veterinarian(AbstractBaseUser):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=40, unique=True)
+
+    first_name = models.CharField(max_length=40, blank=True)
+    last_name = models.CharField(max_length=40, blank=True)
+    tagline = models.CharField(max_length=140, blank=True)
+
+    is_admin = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = VeterinarianManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+    def __unicode__(self):
+        return self.email
+
+    def get_full_name(self):
+        return ' '.join([self.first_name, self.last_name])
+
+    def get_short_name(self):
+        return self.first_name
 
 class Patient(models.Model):
     create_by = models.ForeignKey('auth.User', verbose_name="Usuario",)
     dog_breed = models.ForeignKey('DogBreed', verbose_name="Raza",)
     primary_color = models.ForeignKey('DogColor', verbose_name="Color Primario", related_name="primary_color")
     second_color = models.ForeignKey('DogColor', verbose_name="Color Secundario", related_name="second_color")
+
+    first_image = models.ImageField(upload_to='uploads/')
 
     name = models.CharField(max_length=200, verbose_name="Nombre",)
     height = models.FloatField(verbose_name="Peso",)
@@ -14,6 +75,12 @@ class Patient(models.Model):
             default=timezone.now)
     published_date = models.DateTimeField(
             blank=True, null=True)
+
+    def image_tag(self):
+        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.first_image
+    image_tag.short_description = 'Image'
+    image_tag.allow_tags = True
+
 
     #override to admin
     def height_info(self):
@@ -34,6 +101,16 @@ class Patient(models.Model):
 
     class Meta:
         verbose_name = 'paciente'
+
+
+# Receive the pre_delete signal and delete the file associated with the model instance.
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
+
+@receiver(pre_delete, sender=Patient)
+def mymodel_delete(sender, instance, **kwargs):
+    # Pass false so FileField doesn't save the model.
+    instance.first_image.delete(False)
 
 
 class DogBreed(models.Model):
@@ -59,6 +136,38 @@ class DogColor(models.Model):
         verbose_name = 'color'
         verbose_name_plural = 'colores'
 
+
+class MedicalConsultation(models.Model):
+    title = models.CharField(max_length=100, unique=True, verbose_name="Titulo",)
+    patient = models.ForeignKey('Patient', verbose_name="paciente",)
+    veterinarian = models.ForeignKey('Veterinarian', verbose_name="veterinario",)
+    description = models.TextField(verbose_name="Descripción",)
+
+    first_image = models.ImageField(upload_to='uploads/')
+    second_image = models.ImageField(upload_to='uploads/')
+    third_image = models.ImageField(upload_to='uploads/')
+
+    def first_image_tag(self):
+        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.first_image
+    first_image_tag.short_description = 'Image 1'
+    first_image_tag.allow_tags = True
+
+    def second_image_tag(self):
+        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.second_image
+    second_image_tag.short_description = 'Image 2'
+    second_image_tag.allow_tags = True
+
+    def third_image_tag(self):
+        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.third_image
+    third_image_tag.short_description = 'Image 3'
+    third_image_tag.allow_tags = True
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'consulta medica'
+        verbose_name_plural = 'consultas medicas'
 '''
 Abigarrado: marcas entremezcladas de diferentes colores sin que predomine ninguno.
 
