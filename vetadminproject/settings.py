@@ -29,7 +29,7 @@ SECRET_KEY = '0730$g285s_s57j$*d_n$s6jdpx-w^aq#5!9as(2n@x+a3_1-3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['45.56.93.71','localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -95,9 +95,9 @@ WSGI_APPLICATION = 'vetadminproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'vetadmin',
-        'USER': 'vetadminuser',
-        'PASSWORD': 'visual.02',
+        'NAME': 'vetadminmodel',
+        'USER': 'postgres',
+        'PASSWORD': '1234567890',
         'HOST': 'localhost',
         'PORT': '',
     }
