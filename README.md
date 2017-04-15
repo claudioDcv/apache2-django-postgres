@@ -33,8 +33,8 @@ CREATE DATABASE vetadmin;
 \q
 ```
 
-### Config in DEV
-```python
+#### Config in DEV
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -47,7 +47,8 @@ DATABASES = {
 }
 ```
 
-### Migrations
+#### Migrations
+
 
 ```shell
 ./manage.py makemigrations
@@ -58,7 +59,8 @@ DATABASES = {
 ```
 --------------------------------
 
-### Create super user
+#### Create super user
+
 ```shell
 ./manage.py createsuperuser
 ```
