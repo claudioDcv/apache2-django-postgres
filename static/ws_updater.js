@@ -12,7 +12,7 @@ function dump(t){
   console.log(t);
 }
 
-var socket = new WebSocket("ws://" + window.location.host + "/updater/");
+var socket = new WebSocket("ws:0.0.0.0:8001/updater/");
 // socket.onopen = function() {
 //   let message = {
 //     user : 'front',

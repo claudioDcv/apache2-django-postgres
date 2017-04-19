@@ -95,6 +95,20 @@ DATABASES = {
 </VirtualHost>
 ```
 
+
+
+
+
+#### DJANGO CHANNEL in production
+- in project folder init the worker `./manage.py runworker`
+- start server websocket daphne `daphne -b 0.0.0.0 -p 8001 vetadminproject.asgi:chnel_layer`
+
+:-) Yeah!!! the project is OK'S
+
+
+
+
+
 #### Vistas
 - Login
   - Recuperación de contraseña
