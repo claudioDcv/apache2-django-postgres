@@ -1,16 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
+{% load med_cons_extras %}
 
 {% block content %}
     <div class="row justify-content-md-left">
       <div class="col-12 col-md-auto col-pading-tb">
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title">{{ object.name }}</h4>
+            <h4 class="card-title">{% uppercase object.name %}</h4>
           </div>
           <div class="card-block">
+            <img style="width:250px;height:auto;" src="/{{ patient.first_image }}"/>
             <p class="card-text">{{ object.description }}</p>
-            <p class="card-text"><small class="text-muted">Raza {{ object.dog_breed }}</small></p>
+            <p class="card-text"><small class="text-muted">Raza {{ object.animal_breed }}</small></p>
             <p class="card-text"><small class="text-muted">Creado por: {{ object.create_by }}</small></p>
           </div>
           <footer class="card-footer">
@@ -19,5 +21,33 @@
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h4>Listado de Controles</h4>
+        {# data #}
+      </div>
+    </div>
+    <div class="row justify-content-md-left">
+    {% for medicalconsult in medicalconsultation %}
+
+      <div class="col-12 col-md-auto col-pading-tb">
+
+        <div class="view-control">
+          <strong>Titulo</strong>
+          <h5>#{{ medicalconsult.pk }} {{ medicalconsult.title }}</h5>
+          <a href="{% url 'medicalconsultation-detail' medicalconsult.pk %}" class="btn btn-primary">Detalle</a>
+          <hr>
+          <strong>Descripción:</strong>
+          <div class="description">{{ medicalconsult.description}}</div>
+          <strong>Listado Imágenes:</strong>
+          <div class="image-list">
+            <div class="image-description" style="background-image:url(/{{ medicalconsult.first_image }})"></div>
+            <div class="image-description" style="background-image:url(/{{ medicalconsult.second_image }})"></div>
+            <div class="image-description" style="background-image:url(/{{ medicalconsult.third_image }})"></div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
   </div>
 {% endblock %}

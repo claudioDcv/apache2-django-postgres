@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% load med_cons_extras %}
+
+{% block content %}
+<div class="col-12 col-md-auto col-pading-tb">
+
+  <div class="view-control">
+    <strong>Titulo</strong>
+    <h5>#{{ object.pk }} {{ object.title }}</h5>
+    <hr>
+    <strong>Descripción:</strong>
+    <div class="description">{{ object.description}}</div>
+    <strong>Listado Imágenes:</strong>
+    <div class="image-list">
+      <div class="image-description" style="background-image:url(/{{ object.first_image }})"></div>
+      <div class="image-description" style="background-image:url(/{{ object.second_image }})"></div>
+      <div class="image-description" style="background-image:url(/{{ object.third_image }})"></div>
+    </div>
+    <footer class="card-footer">
+      <a href="{% url 'patient-detail' object.patient.pk %}" class="btn btn-primary">Paciente</a>
+    </footer>
+  </div>
+</div>
+{% endblock %}

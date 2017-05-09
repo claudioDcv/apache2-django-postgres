@@ -2,29 +2,37 @@
 {% load static %}
 
 {% block content %}
-
-    <div id="target"></div>
-    <div class="row justify-content-md-left">
-      {% for patient in object_list %}
-      <div class="col-12 col-md-auto col-pading-tb">
-        <div class="card">
-          <div class="card-header">
-            <h4 class="card-title">{{ patient.name }}</h4>
-          </div>
-          <div class="card-block">
-            <p><img style="width:300px;height:auto;" src="/{{ patient.first_image }}"/></p>
-            <p class="card-text">{{ patient.description }}</p>
-            <p class="card-text"><small class="text-muted">Raza {{ patient.dog_breed }}</small></p>
-            <p class="card-text"><small class="text-muted">Creado por: {{ patient.create_by }}</small></p>
-          </div>
-          <footer class="card-footer">
-            <a href="#" class="btn btn-primary">Detalle</a>
-          </footer>
-        </div>
+<div class="row">
+  <div class="col-6">
+    <h2>Listado Tipos de Pacientes</h2>
+  </div>
+  <div class="col-6 text-right">
+    <a class="btn btn-primary" href="{% url 'patient-new' %}"><i class="fa fa-plus" aria-hidden="true"></i> Nuevo</a>
+  </div>
+</div>
+<div class="row justify-content-md-left">
+  {% for patient in object_list %}
+  <div class="col-12 col-md-auto col-pading-tb">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">{{ patient.name }}</h4>
       </div>
-      {% endfor %}
+      <div class="card-block">
+        <p><img style="width:250px;height:auto;" src="/{{ patient.first_image }}"/></p>
+        <p class="card-text">{{ patient.description }}</p>
+        <p class="card-text"><small class="text-muted">Animal {{ patient.animal_breed.animal_type }} - Raza {{ patient.animal_breed }}</small></p>
+        <p class="card-text"><small class="text-muted">Creado por: {{ patient.create_by }}</small></p>
+      </div>
+      <footer class="card-footer">
+        <a href="{% url 'patient-detail' patient.pk %}" class="btn btn-primary">Detalle</a>
+      </footer>
     </div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
 {% block scripts %}
-<script src="{% static 'third_party/socket.io.js' %}"></script>
+<script type="text/javascript">
+//detail();
+</script>
 {% endblock %}

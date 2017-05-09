@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+{% load med_cons_extras %}
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="row">
+  <div class="col">
+    <h2>Nuevo Tipo de Raza</h2>
+    <a class="btn btn-secondary" href="{% url 'animalBreed-list' %}">
+      <i class="fa fa-chevron-left" aria-hidden="true"></i> Volver
+    </a>
+  </div>
+</div>
+<div class="row row-space">
+  <div class="col">
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% bootstrap_form form layout="horizontal" %}  
+      {% buttons %}
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-floppy-o" aria-hidden="true"></i> Crear
+          </button>
+      {% endbuttons %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+$("select").select2({
+  ajax: {
+    url: geturl('json-animal-type/'),
+    dataType: 'json',
+    delay: 250,
+    data: function (params) {
+      return {
+        q: params.term, // search term
+        page: params.page
+      };
+    },
+    processResults: function (data, params) {
+      // parse the results into the format expected by Select2
+      // since we are using custom formatting functions we do not need to
+      // alter the remote JSON data, except to indicate that infinite
+      // scrolling can be used
+      params.page = params.page || 1;
+
+      return {
+        results: data.items,
+        pagination: {
+          more: (params.page * 30) < data.total_count
+        }
+      };
+    },
+    cache: true
+  },
+  // escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+  // minimumInputLength: 1,
+  // templateResult: formatRepo, // omitted for brevity, see the source of this page
+  // templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+});
+</script>
+{% endblock %}

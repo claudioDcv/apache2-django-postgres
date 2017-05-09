@@ -9,9 +9,15 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+
+import channels.asgi
+import asgi_redis
+from asgi_redis import RedisChannelLayer
+
 from vetadminproject.paths import PROJECT_DIR
 from vetadminproject.paths import PROJECT_NAME
-from vetadminproject.paths import VAR_ROOT
+# from vetadminproject.paths import VAR_ROOT
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +34,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+# Redirect when login is correct.
+LOGIN_REDIRECT_URL = "/consulta/"
+# Redirect when login is not correct.
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,7 +52,17 @@ INSTALLED_APPS = [
     'metrics',
     'pharmacy',
     'customers',
+    'bootstrap4',
+    'channels'
 ]
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -79,55 +99,42 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'vetadminproject.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
-
 
 
 def env(name):
     return os.environ.get(name, None)
 
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'vetadminmodel',
+        'NAME': 'vetadmin',
         'USER': 'postgres',
         'PASSWORD': '1234567890',
-        'HOST': 'localhost',
-        'PORT': '' ,
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', # noqa E501
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', # noqa E501
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', # noqa E501
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', # noqa E501
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -139,45 +146,83 @@ USE_TZ = True
 SITE_ID = 1
 
 
-# AUTH_USER_MODEL = 'authentication.Account'
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "chat.settings")
+# channel_layer = channels.asgi.get_channel_layer()
+# import ipdb; ipdb.set_trace()
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+#         },
+#         "ROUTING": "medicalConsultation.routing.channel_routing",
+#     },
+# }
 
+# channel WS
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgiref.inmemory.ChannelLayer",
+#         "ROUTING": "medicalConsultation.routing.channel_routing",
+#     },
+# }
+
+channel_layer = RedisChannelLayer(
+    channel_capacity={
+        "http.request": 200,
+        "http.response*": 10,
+    }
+)
+# "redis://:127.0.0.1:6379"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "ROUTING": "medicalConsultation.routing.channel_routing",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+            # "symmetric_encryption_keys": [SECRET_KEY],
+        },
+    },
+}
+
+# channel_layer = RedisChannelLayer(
+#     host="redis",
+#     db=4,
+#     channel_capacity={
+#         "http.request": 200,
+#         "http.response*": 10,
+#     }
+# )
+
+# AUTH_USER_MODEL = 'authentication.Account'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-
-STATIC_URL = '/static/'
-## MEDIA_URL = '/static/uploads/'
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(PROJECT_DIR, PROJECT_NAME),
-)
-
-# MEDIA_ROOT = os.path.join(
-#     os.path.abspath(os.path.dirname(__file__)),
-#     'media',
-# )
-MEDIA_URL = '/'
-# ADMIN_MEDIA_PREFIX = '/media/admin/'
-
-
+# PROD
 # STATIC_URL = '/static/'
 #
-# MEDIA_URL = '/media/'
-#
-MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
-#
-# STATIC_ROOT = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'static-only')
-#
 # STATICFILES_DIRS = (
-#     os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'static'),
+#     os.path.join(BASE_DIR, "static"),
+#     os.path.join(PROJECT_DIR, PROJECT_NAME),
 # )
 #
-# TEMPLATE_DIRS = (
-#     os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'templates'),
-# )
+#
+# MEDIA_URL = '/'
+#
+# MEDIA_ROOT = os.path.join(os.path.dirname(
+#   os.path.dirname(__file__)), 'static')
+#
+#
+# STATICFILES_DIRS = [
+# os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static','uploads'),
+# ]
+# DEV
+# STATIC_ROOT = '/var/www/vetadminweb/vetadminproject/static'
 
+MEDIA_URL = '/'
+STATIC_URL = '/static/'
+MEDIA_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), 'media', 'uploads')
+MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
 STATICFILES_DIRS = [
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static','uploads'),
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static'),
 ]
-
-# STATIC_ROOT = '/var/www/vetadminweb/vetadminproject/static'

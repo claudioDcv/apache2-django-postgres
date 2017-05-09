@@ -5,6 +5,7 @@
   <head>
       <script type="text/javascript">
         var base_url = 'http://localhost:8000/api/';
+        window.static_url = "{% static '' %}";
       </script>
       <meta charset="utf-8"/>
       <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -15,12 +16,14 @@
       <link rel="stylesheet" type="text/css" href="{% static 'sticky-footer-navbar.css' %}" />
       <link rel="stylesheet" href="{% static 'third_party/tether/dist/css/tether.min.css' %}">
       <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/styles.css' %}" />
-
+      <link rel="stylesheet" href="{% static 'third_party/c3-0.4.11/c3.min.css' %}">
+      <link rel="stylesheet" href="{% static 'third_party/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+      <link href="{% static 'third_party/select2-4.0.3/dist/css/select2.min.css' %}" rel="stylesheet" />
       {% block head %}{% endblock %}
   </head>
   <body>
 {% block navbar %}
-    <nav class="navbar navbar-fixed-top navbar-toggleable-sm navbar-inverse bg-primary mb-3">
+    <nav class="navbar navbar-fixed-top navbar-toggleable-sm navbar-inverse bg-primary">
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -44,7 +47,7 @@
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="" data-target="#myModal" data-toggle="modal">Cerrar Sesión</a>
+                <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
             </li>
         </ul>
     </div>
@@ -53,9 +56,9 @@
 <div class="container-fluid" id="main">
     <div class="row row-offcanvas row-offcanvas-left">
         <div class="col-md-3 col-lg-2 sidebar-offcanvas" id="sidebar" role="navigation">
-            <ul class="nav flex-column pl-1">
+            <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
-                <li class="nav-item active">
+                <li class="nav-item">
                   <a class="nav-link" href="#submenu1" data-toggle="collapse" data-target="#submenu1">Paciente ▾</a>
                   <ul class="list-unstyled flex-column pl-3 collapse {% if request.resolver_match.url_name == 'patient-list' or request.resolver_match.url_name == 'patient-detail'  or request.resolver_match.url_name == 'patient-new' %}show{% endif %}" id="submenu1" aria-expanded="false">
                     <li class="nav-item"><a class="nav-link nav-link-sub {% if request.resolver_match.url_name == 'patient-list' %}active{% endif %}" href="{% url 'patient-list' %}">Listado</a></li>
@@ -65,24 +68,43 @@
                 <li class="nav-item"><a class="nav-link" href="">Controles</a></li>
                 <li class="nav-item"><a class="nav-link" href="">Clientes</a></li>
                 <li class="nav-item"><a class="nav-link" href="">Metricas</a></li>
-                <li class="nav-item"><a class="nav-link" href="">Veterinarios</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'animalType-list' %}active{% endif %}" href="{% url 'animalType-list' %}">Tipo Animal</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'animalBreed-list' %}active{% endif %}" href="{% url 'animalBreed-list' %}">Razas</a></li>
                 <li class="nav-item"><a class="nav-link" href="">Info</a></li>
             </ul>
         </div>
 
   <!--/col-->
         <div class="col-md-9 col-lg-10 main">
+              {% if messages %}
+              <div class="row row-space">
+                <div class="col">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %} {{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  {{ message|safe }}
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+              {% endif %}
             {% block content %}{% endblock %}
         </div>
       </div>
     </div>
-
+    <script src="{% static 'ajax.js' %}" charset="utf-8"></script>
+    <script src="{% static 'third_party/d3.v3.min.js' %}" charset="utf-8"></script>
     <script src="{% static 'third_party/tether/dist/js/tether.min.js' %}" charset="utf-8"></script>
     <script src="{% static 'third_party/jquery/dist/jquery.min.js' %}" charset="utf-8"></script>
     <script src="{% static 'third_party/bootstrap/dist/js/bootstrap.min.js' %}" charset="utf-8"></script>
-
+    <script src="{% static 'third_party/c3-0.4.11/c3.min.js' %}" charset="utf-8"></script>
     <script src="{% static 'dashboard/js/scripts.js' %}" charset="utf-8"></script>
-
+    <script src="{% static 'third_party/select2-4.0.3/dist/js/select2.min.js' %}"></script>
+    <script src="{% static 'third_party/select2-4.0.3/dist/js/i18n/es.js' %}" charset="utf-8"></script>
+    <script src="{% static 'main.js' %}" charset="utf-8"></script>
+    <script src="{% static 'ws_updater.js' %}" charset="utf-8"></script>
     {% block scripts %}{% endblock %}
   </body>
 </html>

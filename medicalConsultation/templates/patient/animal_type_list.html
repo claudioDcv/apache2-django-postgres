@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+{% load med_cons_extras %}
+
+{% block content %}
+<div class="row">
+  <div class="col-6">
+    <h2>Listado Tipos de Animales</h2>
+
+  </div>
+  <div class="col-6 text-right">
+    <a class="btn btn-primary to-rigth" href="{% url 'animalType-new' %}"><i class="fa fa-plus" aria-hidden="true"></i> Nuevo</a>
+  </div>
+</div>
+<form class="form-inline form" method="get">
+  <div class="row row-space">
+    <div class="col-lg-12">
+      <div class="input-group">
+        <input type="search" name="search" class="form-control" id="input-search" placeholder="Ingrese texto a buscar" value="{{ search }}">
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="row row-space">
+  <div class="col">
+    <div class="ctm-box">
+      <table class="table table-sm table-striped table-hover">
+        <thead>
+          <tr>
+            <th><a href="?search={{ search }}&order_by={% crr_order_by last_order_by 'id' %}&page={{ page }}">Id</a></th>
+            <th><a href="?search={{ search }}&order_by={% crr_order_by last_order_by 'name' %}&page={{ page }}">Nombre</a></th>
+            <th><a href="?search={{ search }}&order_by={% crr_order_by last_order_by 'code' %}&page={{ page }}">Código</a></th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for animalType in animals %}
+          <tr>
+            <td>{{ animalType.id }}</td>
+            <td>{{ animalType.name }}</td>
+            <td>{{ animalType.code }}</td>
+            <td>
+              <div class="btn-group">
+                <a class="btn btn-primary btn-sm" href="{% url 'animalType-edit' animalType.id %}">
+                  <i class="fa fa-pencil" aria-hidden="true"></i>
+                </a>
+                <a class="btn btn-danger btn-sm" href="{% url 'animalType-delete' animalType.id %}">
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- <form action="." method="GET">
+      <select name="paginate_by">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+      </select>
+      <button type="submit" name="button">Enviar</button>
+  </form> -->
+    <strong>Pagina {{ page }} de {{ paginator.num_pages }} | Elementos encontrados: {{ paginator.count }} | Ordenado por: {{ last_order_by }}</strong>
+    <hr>
+    {% if is_paginated %}
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?search={{ search }}&order_by={{ order_by }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+      {% endif %}
+      {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+        <li class="page-item active">
+          <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+        </li>
+        {% else %}
+          <li class="page-item"><a class="page-link" href="?search={{ search }}&order_by={{ order_by }}&page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?search={{ search }}&order_by={{ order_by }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      {% endif %}
+    </ul>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

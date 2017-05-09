@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+      <script type="text/javascript">
+        var base_url = 'http://localhost:8000/api/';
+        window.static_url = "{% static '' %}";
+      </script>
+      <meta charset="utf-8"/>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}" />
+      <link rel="stylesheet" href="{% static 'third_party/bootstrap/dist/css/bootstrap.min.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'sticky-footer-navbar.css' %}" />
+      <link rel="stylesheet" href="{% static 'third_party/tether/dist/css/tether.min.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/styles.css' %}" />
+      <link rel="stylesheet" href="{% static 'third_party/c3-0.4.11/c3.min.css' %}">
+      <link rel="stylesheet" href="{% static 'third_party/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+      <link href="{% static 'third_party/select2-4.0.3/dist/css/select2.min.css' %}" rel="stylesheet" />
+      {% block head %}{% endblock %}
+  </head>
+  <body id="public-site">
+{% block navbar %}
+{% endblock %}
+    <div class="container-fluid" id="main">
+            {% block content %}{% endblock %}
+    </div>
+    <script src="{% static 'ajax.js' %}" charset="utf-8"></script>
+    <script src="{% static 'third_party/d3.v3.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'third_party/tether/dist/js/tether.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'third_party/jquery/dist/jquery.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'third_party/bootstrap/dist/js/bootstrap.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'third_party/c3-0.4.11/c3.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'dashboard/js/scripts.js' %}" charset="utf-8"></script>
+    <script src="{% static 'third_party/select2-4.0.3/dist/js/select2.min.js' %}"></script>
+    <script src="{% static 'third_party/select2-4.0.3/dist/js/i18n/es.js' %}" charset="utf-8"></script>
+    <script src="{% static 'main.js' %}" charset="utf-8"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

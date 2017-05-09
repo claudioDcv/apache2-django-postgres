@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% load med_cons_extras %}
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="row">
+  <div class="col">
+    <h2>Estas seguro que deseas eliminar: "{{ object }}"?</h2>
+    <div><strong>Considere que todos los elementos dependiente de este elemento se eliminaran</strong></div>
+    <a class="btn btn-secondary" href="{% url 'animalType-list' %}">
+      <i class="fa fa-chevron-left" aria-hidden="true"></i> Volver
+    </a>
+  </div>
+</div>
+<div class="row row-space">
+  <div class="col">
+    <form action="" method="post">{% csrf_token %}
+    {% buttons %}
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-trash" aria-hidden="true"></i> Eliminar
+        </button>
+    {% endbuttons %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

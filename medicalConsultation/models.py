@@ -2,16 +2,26 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
-from PIL import Image
+from vetadminproject.utils import code_generate, resize_image
+from .decorators import decorator_auditor_save
+# from django.core.exceptions import ValidationError
+# from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+import os
 
 
+class Auditor(models.Model):
+    tag = models.SlugField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    action = models.CharField(max_length=40)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-import socket
-#
-# try:
-#     HOSTNAME = 'http://localhost:8000/static/'
-# except:
-#     HOSTNAME = 'localhost'
+    def __str__(self):
+        return self.tag
+
 
 class VeterinarianManager(BaseUserManager):
 
@@ -33,6 +43,7 @@ class VeterinarianManager(BaseUserManager):
         account.save()
         return account
 
+
 class Veterinarian(AbstractBaseUser):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=40, unique=True)
@@ -51,7 +62,11 @@ class Veterinarian(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    def __unicode__(self):
+    class Meta:
+        verbose_name = 'veterinario'
+        verbose_name_plural = 'veterinarios'
+
+    def __str__(self):
         return self.email
 
     def get_full_name(self):
@@ -60,12 +75,59 @@ class Veterinarian(AbstractBaseUser):
     def get_short_name(self):
         return self.first_name
 
+
+class AnimalType(models.Model):
+
+    name = models.CharField(
+        max_length=200, unique=True, verbose_name="Nombre",)
+    code = models.CharField(
+        max_length=200, unique=True, verbose_name="Código",)
+
+    def __str__(self):
+        return code_generate(self.name)
+
+    class Meta:
+        verbose_name = 'tipo de animal'
+        verbose_name_plural = 'tipo de animales'
+
+    def delete(self, *args, **kwargs):
+        auditor = Auditor(content_object=self, tag=str(self), action='delete')
+        super(AnimalType, self).delete(*args, **kwargs)
+        auditor.save()
+
+    @decorator_auditor_save
+    def save(self, *args, **kwargs):
+        self.code = code_generate(self.name)
+        object_id = self.id
+        super(AnimalType, self).save(*args, **kwargs)
+        auditor = None
+        if object_id is not None:
+            auditor = Auditor(
+                content_object=self, tag=str(self), action='update')
+        else:
+            auditor = Auditor(
+                content_object=self, tag=str(self), action='save')
+        auditor.save()
+        # t.content_object
+
+
 class Patient(models.Model):
     create_by = models.ForeignKey('auth.User', verbose_name="Usuario",)
-    dog_breed = models.ForeignKey('DogBreed', verbose_name="Raza",)
-    primary_color = models.ForeignKey('DogColor', verbose_name="Color Primario", related_name="primary_color")
-    second_color = models.ForeignKey('DogColor', verbose_name="Color Secundario", related_name="second_color")
+    animal_breed = models.ForeignKey('AnimalBreed', verbose_name="Raza",)
+    primary_color = models.ForeignKey(
+        'AnimalColor',
+        verbose_name="Color Primario",
+        related_name="primary_color")
+    animal_type = models.ForeignKey(
+        'AnimalType',
+        verbose_name="Tipo de Animal",
+        on_delete=models.PROTECT)
+    second_color = models.ForeignKey(
+        'AnimalColor',
+        verbose_name="color secundario",
+        related_name="second_color")
 
+    # first_image = models.ImageField(upload_to='uploads/%Y/%m/%d/')
     first_image = models.ImageField(upload_to='uploads/')
 
     name = models.CharField(max_length=200, verbose_name="Nombre",)
@@ -77,12 +139,16 @@ class Patient(models.Model):
             blank=True, null=True)
 
     def image_tag(self):
-        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.first_image
+
+        try:
+            self.first_image.url
+        except Exception as e:
+            return u'<span></span>'
+        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.first_image  # noqa: ES01
+
     image_tag.short_description = 'Image'
     image_tag.allow_tags = True
 
-
-    #override to admin
     def height_info(self):
         return str(self.height) + 'KG'
     height_info.short_description = 'Peso, (KG)'
@@ -91,42 +157,94 @@ class Patient(models.Model):
         return self.create_by.username + ' - #' + str(self.create_by.id)
     create_by_info.short_description = 'Creado por'
 
-
     def publish(self):
         self.published_date = timezone.now()
         self.save()
 
     def __str__(self):
-        return self.name
+        return code_generate(self.name)
 
     class Meta:
         verbose_name = 'paciente'
 
+    def delete(self, *args, **kwargs):
+        auditor = Auditor(content_object=self, tag=str(self), action='delete')
+        try:
+            if os.path.isfile(self.first_image.path):
+                os.remove(self.first_image.path)
+        except Exception as e:
+            raise ValueError(e)
+        super(Patient, self).delete(*args, **kwargs)
+        auditor.save()
 
-# Receive the pre_delete signal and delete the file associated with the model instance.
-from django.db.models.signals import pre_delete
-from django.dispatch.dispatcher import receiver
+    def save(self, *args, **kwargs):
 
-@receiver(pre_delete, sender=Patient)
-def mymodel_delete(sender, instance, **kwargs):
-    # Pass false so FileField doesn't save the model.
-    instance.first_image.delete(False)
+        exist_old = True
+        try:
+            old_data = Patient.objects.get(id=self.id)
+        except Exception as e:
+            exist_old = False
+        if exist_old:
+            pass
+            # Delete old image
+            # old_data.first_image.delete()
+
+        super(Patient, self).save(*args, **kwargs)
+        if exist_old:
+            new_data = Patient.objects.get(id=self.id)
+            resize_image(new_data.first_image)
+            # old_data.first_image.delete()
+            if new_data.first_image.path != old_data.first_image.path:
+                print(new_data.first_image.path, old_data.first_image.path)
+                if os.path.isfile(old_data.first_image.path):
+                    os.remove(old_data.first_image.path)
+            t = Auditor(content_object=self, tag=str(self), action='update')
+            t.save()
+        else:
+            t = Auditor(content_object=self, tag=str(self), action='save')
+            t.save()
 
 
-class DogBreed(models.Model):
-    name = models.CharField(max_length=200, unique=True, verbose_name="Nombre",)
-    code = models.CharField(max_length=200, unique=True, verbose_name="Código",)
+class AnimalBreed(models.Model):
+
+    name = models.CharField(
+        max_length=200, verbose_name="Nombre",)
+    code = models.CharField(
+        max_length=200, verbose_name="Código",)
+    animal_type = models.ForeignKey(
+        'AnimalType', verbose_name="Tipo de Animal")
 
     def __str__(self):
         return self.name
 
     class Meta:
+        unique_together = ("code", "animal_type")
         verbose_name = 'raza'
 
+    def save(self, *args, **kwargs):
+        self.code = code_generate(self.name)
+        object_id = self.id
+        super(AnimalBreed, self).save(*args, **kwargs)
+        auditor = None
+        if object_id is not None:
+            auditor = Auditor(
+                content_object=self, tag=str(self), action='update')
+        else:
+            auditor = Auditor(
+                content_object=self, tag=str(self), action='save')
+        auditor.save()
+    # def save(self, *args, **kwargs):
+    #     try:
+    #         super(AnimalBreed, self).save(*args, **kwargs)
+    #     except Exception as e:
+    #
 
-class DogColor(models.Model):
-    name = models.CharField(max_length=100, unique=True, verbose_name="Nombre",)
-    code = models.CharField(max_length=100, unique=True, verbose_name="Código",)
+
+class AnimalColor(models.Model):
+    name = models.CharField(
+        max_length=100, unique=True, verbose_name="Nombre",)
+    code = models.CharField(
+        max_length=100, unique=True, verbose_name="Código",)
     description = models.TextField(verbose_name="Descripción",)
 
     def __str__(self):
@@ -138,9 +256,11 @@ class DogColor(models.Model):
 
 
 class MedicalConsultation(models.Model):
-    title = models.CharField(max_length=100, unique=True, verbose_name="Titulo",)
+    title = models.CharField(
+        max_length=100, unique=True, verbose_name="Titulo",)
     patient = models.ForeignKey('Patient', verbose_name="paciente",)
-    veterinarian = models.ForeignKey('Veterinarian', verbose_name="veterinario",)
+    veterinarian = models.ForeignKey(
+        'Veterinarian', verbose_name="veterinario",)
     description = models.TextField(verbose_name="Descripción",)
 
     first_image = models.ImageField(upload_to='uploads/')
@@ -148,17 +268,17 @@ class MedicalConsultation(models.Model):
     third_image = models.ImageField(upload_to='uploads/')
 
     def first_image_tag(self):
-        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.first_image
+        return u'<img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.first_image  # noqa: ES01
     first_image_tag.short_description = 'Image 1'
     first_image_tag.allow_tags = True
 
     def second_image_tag(self):
-        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.second_image
+        return u'<img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.second_image  # noqa: ES01
     second_image_tag.short_description = 'Image 2'
     second_image_tag.allow_tags = True
 
     def third_image_tag(self):
-        return u'<style>#result_list .image-thumbnail{width: auto;margin: -8px;height: 27px;}</style><img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.third_image
+        return u'<img style="max-height: 300px;max-width: 300px;"class="image-thumbnail" src="/%s" />' % self.third_image  # noqa: ES01
     third_image_tag.short_description = 'Image 3'
     third_image_tag.allow_tags = True
 
@@ -168,225 +288,3 @@ class MedicalConsultation(models.Model):
     class Meta:
         verbose_name = 'consulta medica'
         verbose_name_plural = 'consultas medicas'
-'''
-Abigarrado: marcas entremezcladas de diferentes colores sin que predomine ninguno.
-
-Albaricoque: color chabacano.
-
-Albino: blanco, sin pigmentaciones.
-
-Amarillo: como el de la raza Vizla.
-
-Arlequín: pelaje de fondo blanco con manchas negras irregulares; es decir, coloración parchada, como el Gran Danés.
-
-Ascob: cualquier color sólido que no sea negro. Este término se usa regularmente con el Cocker Spaniel.
-
-Atigrado: mezcla de pelo negro en forma de rayas sobre un color más claro, como café o rojo, común en el Bóxer.
-
-Avellana: café cremoso.
-
-Azul: va desde el azul gris pálido hasta el azul acero o azul gris, por ejemplo el Kerry Blue Terrier.
-
-Azul grisáceo o grizzle: también llamado mezclilla como el Weimaraner.
-
-Azul mirlo: es marmoleado azul y gris, combinado con un toque de negro.
-
-Belton: una composición de blanco y pelo de color naranja y azul o hígado, es típico en el Setter inglés.
-
-Bleiz: raya blanca corriendo por el centro de la frente entre los ojos, como el Boston terrier.
-
-Bronce: amarillo dorado.
-
-Café: rojizo profundo.
-
-Caoba: rojo dorado.
-
-Cervato: amarillento pálido.
-
-Cobre: Dorado encendido.
-
-Collar: marca alrededor del cuello, habitualmente es blanca, como la que posee el Collie.
-
-Con anteojos: sombras alrededor de los ojos que se extiende hasta las orejas; el Husky Siberiano entra en esta categoría.
-
-Cortado: un color separado por blanco u otro color.
-
-Champaña: amarillo suave.
-
-Chocolate: café oscuro.
-
-Encendido: color subido.
-
-Ensillado: marca negra sobre la espalda.
-
-Flameado: color llama.
-
-Fuego: rojo encendido.
-
-Golondrino: definidos negro y paja, como el Doberman.
-
-Gris carbonado: puntas del pelo en color negro con el fondo gris.
-
-Hígado: café rojizo oscuro.
-
-Isabela: color amarillo parduzco o bayo claro.
-
-Leonado: por lo regular es rojizo o amarillo claro.
-
-Lila: morado azulado.
-
-Manchado: parches grandes de dos o más colores.
-
-Manteado: una mancha en forma de manta.
-
-Marcado: manchas sobre el cuerpo que pueden ser correctas o incorrectas.
-
-Marcas de lápiz: color delineado.
-
-Marrón: café rojizo.
-
-Máscara: delineada sobre la cara, habitualmente negra.
-
-Matices: diferentes tonalidades.
-
-Moteado: con pecas sobre el cuerpo, característico del Dálmata.
-
-Naranja: amarillo intenso.
-
-Paja: dorado, moreno o pardo.
-
-Pardo: color profuso, generalmente grisáceo.
-
-Particolor: manchando con grandes parches de dos o más colores.
-
-Pincelado: marcas negras sobre un fondo claro.
-
-Plateado: gris plata.
-
-Porcelana: color gris sucio.
-
-Roano: mezcla de pelos blancos sobre una base azul, naranja o limón.
-
-Rubio carbonado: puntas negras sobre un fondo canela.
-
-Sal y pimienta: colores gris oscuro con gris claro o blanco pardo, como el Schnauzer miniatura.
-
-Sepia: café rojizo oscuro.
-
-Tricolor: mezcla de colores negro, blanco y café, distintivos en los Hounds.
-
-'''
-
-'''
-
-A
-A
-Alano
-Alaskan Malamute
-American Staffordshire Terrier
-American Water Spaniel
-Antiguo Pastor Inglés
-
-OKSOKS
-
-
-
-B
-Basset Azul de Gaseogne
-Basset Hound
-Basset leonado de Bretaña
-Beagle
-Bearded Collie
-Bichón Maltés
-Bobtail
-Border Collie
-Boston Terrier
-Boxer
-Bull Terrier
-Bulldog Americano
-Bulldog Francés
-Bulldog Inglés
-C
-Caniche
-Carlino
-Chihuahua
-Cirneco del Etna
-Chow Chow
-Cocker Spaniel Americano
-Cocker Spaniel Inglés
-D
-Dálmata
-Dobermann
-Dogo Alemán
-Dogo Argentino
-Dogo de Burdeos
-F
-Finlandés
-Fox Terrier de pelo liso
-Fox Terrier
-Foxhound Americano
-Foxhound Inglés
-G
-Galgo Afgano
-Gigante de los Pirineos
-Golden Retriever
-Gos d'Atura
-Gran Danés
-H
-Husky Siberiano
-L
-Laika de Siberia Occidental
-Laika Ruso-europeo
-Labrador Retriever
-M
-Mastín del Pirineo
-Mastin del Tibet
-Mastín Español
-Mastín Napolitano
-P
-Pastor Alemán
-Pastor Australiano
-Pastor Belga
-Pastor de Brie
-Pastor de los Pirineos de Cara Rosa
-Pekinés
-Perdiguero Chesapeake Bay
-Perdiguero de Drentse
-Perdiguero de Pelo lido
-Perdiguero de pelo rizado
-Perdiguero Portugués
-Pitbull
-Podenco Ibicenco
-Podenco Portugués
-presa canario
-Presa Mallorquin
-R
-Rottweiler
-Rough Collie
-S
-Sabueso Español
-Sabueso Hélenico
-Sabueso Italiano
-Sabueso Suizo
-Samoyedo
-San Bernardo
-Scottish Terrier
-Setter Irlandés
-Shar Pei
-Shiba Inu
-Siberian Husky
-Staffordshire Bull Terrier
-T
-Teckel
-Terranova
-Terrier Australiano
-Terrier Escocés
-Terrier Irlandés
-Terrier Japonés
-Terrier Negro Ruso
-Terrier Norfolk
-Terrier Norwich
-Y
-Yorkshire Terrier
-
-'''
