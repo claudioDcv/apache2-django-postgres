@@ -6,7 +6,7 @@
   \/_____/   \/_____/   \/_/\/_/   \/_____/   \/____/   \/_/   \/_____/ 
      
 ```
-                                                                                                                         
+                                                                                                                        
 ### Sistema de administracion para veterinarias
 
 # apache2-django-postgres
