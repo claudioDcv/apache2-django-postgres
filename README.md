@@ -58,7 +58,6 @@ DATABASES = {
 
 #### Migrations
 
-
 ```shell
 ./manage.py makemigrations
 
