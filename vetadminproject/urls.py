@@ -14,9 +14,6 @@ from django.contrib.auth.views import login
 
 # from django.contrib.auth.decorators import login_required
 
-
-
-
 urlpatterns = [
     url('^', include('django.contrib.auth.urls')),
     url(r'^accounts/login/$', login, {
