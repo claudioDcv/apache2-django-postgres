@@ -74,7 +74,6 @@ DATABASES = {
 ./manage.py createsuperuser
 ```
 
-
  ### Config Apache 2
  - in `/etc/apache2/sites-available`
 
