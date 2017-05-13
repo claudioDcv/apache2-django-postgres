@@ -1,0 +1,7 @@
+[flake8]
+exclude = */migrations/*.py,*_settings.py,settings.py,celery.py,*/base/models/__init__.py,*/base/__init__.py,docs,bootstrap4,manage.py
+format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s
+max-line-length = 100
+inline-quotes = '
+# ignore = C812,N801,N805
+select = C,D,E,F,H,I,N,P,Q,S,T,W
