@@ -52,3 +52,4 @@ txaio==2.7.0
 wcwidth==0.1.7
 wheel==0.29.0
 zope.interface==4.4.0
+flake8-colors=0.1.6
