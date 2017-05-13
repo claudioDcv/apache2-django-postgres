@@ -14,7 +14,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 from vetadminproject.paths import PROJECT_DIR
 from vetadminproject.paths import PROJECT_NAME
-from vetadminproject.paths import VAR_ROOT
+# from vetadminproject.paths import VAR_ROOT
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +29,7 @@ SECRET_KEY = '0730$g285s_s57j$*d_n$s6jdpx-w^aq#5!9as(2n@x+a3_1-3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['45.56.93.71','localhost']
+ALLOWED_HOSTS = ['45.56.93.71', 'localhost']
 
 
 # Application definition
@@ -83,45 +83,47 @@ WSGI_APPLICATION = 'vetadminproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-#DATABASES = {
+# DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
-#}
+# }
 
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'vetadmin',
-        'USER': 'postgres',
-        'PASSWORD': '1234567890',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'vetadmin',
+#         'USER': 'postgres',
+#         'PASSWORD': '1234567890',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+# # https://docs.djangoproject.com/en/1.10/
+# ref/settings/#auth-password-validators
+#
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME':
+# 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME':
+# 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#
+# 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME':
+# 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
 
 
 # Internationalization

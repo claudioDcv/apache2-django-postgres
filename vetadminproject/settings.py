@@ -10,8 +10,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-import channels.asgi
-import asgi_redis
+# import channels.asgi
+# import asgi_redis
 from asgi_redis import RedisChannelLayer
 
 from vetadminproject.paths import PROJECT_DIR

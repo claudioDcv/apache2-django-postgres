@@ -7,16 +7,20 @@ from django.conf.urls.static import static
 from django.views.static import serve
 
 from django.contrib.auth.views import login
-# urlpatterns = [
-    # ... the rest of your URLconf goes here ...
-# ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-from django.contrib.auth.decorators import login_required
+
+# urlpatterns = [
+# ... the rest of your URLconf goes here ...
+# ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# from django.contrib.auth.decorators import login_required
+
+
 
 
 urlpatterns = [
-
     url('^', include('django.contrib.auth.urls')),
-    url(r'^accounts/login/$', login, {'template_name': 'login.html'}, name="login") ,
+    url(r'^accounts/login/$', login, {
+        'template_name': 'login.html'}, name="login"),
     # url(r'^logout/$', auth_views.logout, name='logout'),
     #
     url(r'^admin/', admin.site.urls),
@@ -29,7 +33,7 @@ urlpatterns = [
     #     'document_root': settings.MEDIA_ROOT
     # }),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-#+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
 if settings.DEBUG:
@@ -37,7 +41,7 @@ if settings.DEBUG:
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
-    
+
 if settings.DEBUG:
     print(settings.MEDIA_ROOT)
     urlpatterns += [
